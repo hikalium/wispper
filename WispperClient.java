@@ -69,22 +69,21 @@ public class WispperClient extends JFrame implements Runnable {
 	BufferedReader in;
 	PrintWriter out;
 	public final static int DEFAULT_PORT = 6543;
-	boolean bConnected;
+	public String userName;
+	public String serverName;
+
 	public int clientID = -1;	// -1: Not assigned 
-	Panel1 panel;
 
 	public void startConnect() {
-		bConnected = false;
 		try {
-			sock = new Socket("127.0.0.1", DEFAULT_PORT);
-			bConnected = true;
-			System.out.println("Connection ok");
+			sock = new Socket(this.serverName, DEFAULT_PORT);
+			System.out.println("Connection established");
 			in = new BufferedReader(
 					new InputStreamReader(sock.getInputStream()));
 			out = new java.io.PrintWriter(sock.getOutputStream());
 		} catch (IOException e) {
-			e.printStackTrace();
-			System.out.println("Connection failed");
+			System.out.println("failed to connect (IOException)");
+			loginFrame.loginPanel.setStatus("Connection Failed.", true);
 		}
 		if (thread == null) {
 			thread = new Thread(this);
@@ -92,6 +91,7 @@ public class WispperClient extends JFrame implements Runnable {
 		}
 	}
 	public void processMsg(String str) {
+		/*
 		System.out.println("received[" + str + "]");
 		String[] separated = str.split(" ", 0);
 		if(separated.length >= 2){
@@ -114,10 +114,14 @@ public class WispperClient extends JFrame implements Runnable {
 				panel.setCharacterPos(id, x, y);
 			}
 		}
+		*/
 	}
 	public void connect(String serverName, String userName)
 	{
 		System.out.println("connecting " + userName + "@" + serverName + " ...");
+		this.serverName = serverName;
+		this.userName = userName;
+		this.startConnect();
 	}
 	LoginFrame loginFrame;
 	private void init() throws Exception {
