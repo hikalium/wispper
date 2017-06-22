@@ -20,6 +20,8 @@ import java.net.*;
 import java.io.*;
 
 public class WispperClient extends JFrame implements Runnable {
+	LoginFrame loginFrame;
+	ChatFrame chatFrame;
 	public WispperClient() { 
 		try {
 			init();
@@ -53,13 +55,6 @@ public class WispperClient extends JFrame implements Runnable {
 		}
 	}		
 	public static void main(String args[]) {
-		/*
-		java.awt.EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				new DrawApp1().setVisible(true);
-			}
-		});
-		*/
 		SwingUtilities.invokeLater(() -> {
 			new WispperClient();
 		});
@@ -81,6 +76,8 @@ public class WispperClient extends JFrame implements Runnable {
 			in = new BufferedReader(
 					new InputStreamReader(sock.getInputStream()));
 			out = new java.io.PrintWriter(sock.getOutputStream());
+			chatFrame = new ChatFrame(this);
+			loginFrame.dispose();
 		} catch (IOException e) {
 			System.out.println("failed to connect (IOException)");
 			loginFrame.loginPanel.setStatus("Connection Failed.", true);
@@ -123,7 +120,6 @@ public class WispperClient extends JFrame implements Runnable {
 		this.userName = userName;
 		this.startConnect();
 	}
-	LoginFrame loginFrame;
 	private void init() throws Exception {
 		/*
 		JPanel pnlHead = new JPanel();

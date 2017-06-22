@@ -2,7 +2,11 @@ default:
 	make WispperClient.class
 	make TestServer.class
 
-WispperClient.class: WispperClient.java LoginFrame.class LoginPanel.class Makefile
+WispperClient.class: WispperClient.java \
+	LoginFrame.class LoginPanel.class \
+	ChatFrame.class ChatPanel.class \
+	MapPanel.class \
+   	Makefile
 	javac WispperClient.java
 
 %.class : %.java Makefile
