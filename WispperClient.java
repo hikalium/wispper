@@ -66,8 +66,13 @@ public class WispperClient extends JFrame implements Runnable {
 	public final static int DEFAULT_PORT = 6543;
 	public String userName;
 	public String serverName;
+	public MapPanel mapPanel;
 
-	public int clientID = -1;	// -1: Not assigned 
+	public Map<String, MapPanel.Character> users = new HashMap<>();
+
+	public MapPanel.Character getMainCharacter(){
+		return users.get(userName);
+	}
 
 	public void startConnect() {
 		try {
@@ -77,43 +82,78 @@ public class WispperClient extends JFrame implements Runnable {
 					new InputStreamReader(sock.getInputStream()));
 			out = new java.io.PrintWriter(sock.getOutputStream());
 			sendMsg("1 " + userName);
-			chatFrame = new ChatFrame(this);
-			loginFrame.dispose();
+			if (thread == null) {
+				thread = new Thread(this);
+				thread.start();
+			}
 		} catch (IOException e) {
 			System.out.println("failed to connect (IOException)");
 			loginFrame.loginPanel.setStatus("Connection Failed.", true);
 		}
-		if (thread == null) {
-			thread = new Thread(this);
-			thread.start();
-		}
 	}
-	public void processMsg(String str) {
-		
-		System.out.println("received[" + str + "]");
-		/*
-		String[] separated = str.split(" ", 0);
-		if(separated.length >= 2){
-			if(separated[0].equals("id")){
-				clientID = Integer.parseInt(separated[1]);
-				System.out.println("assigned id:" + clientID);
-				panel.appendCharacter(clientID);
-				panel.revalidate();
-				panel.repaint();
-			} else if(separated[0].equals("connected")){
-				int id = Integer.parseInt(separated[1]);
-				panel.appendCharacter(id);
-				panel.revalidate();
-				panel.repaint();
-			} else if(separated[0].equals("move")){
-				int id = Integer.parseInt(separated[1]);
-				if(id == clientID) return;
-				int x = Integer.parseInt(separated[2]);
-				int y = Integer.parseInt(separated[3]);
-				panel.setCharacterPos(id, x, y);
+	public void processMsg(String msg) {
+		System.out.println("received[" + msg + "]");
+		String[] token = msg.split(" ", 0);
+		if(token[0].equals("2") && token.length >= 2){
+			if(token[1].equals("1")){
+				// duplicated user:
+				loginFrame.loginPanel.setStatus("User name already in use", true);
+				return;
+			} else if(token[1].equals("0")){
+				// OK
+				chatFrame = new ChatFrame(this);
+				loginFrame.dispose();
+				//
+				MapPanel.Character u;
+				u = new MapPanel.Character(this, "orange.png");
+				u.setLocation(
+						Integer.parseInt(token[3]),
+						Integer.parseInt(token[4]), false);
+				users.put(token[2], u);
+				return;
 			}
+			loginFrame.loginPanel.setStatus("Unknown error", true);
+		} else if(token[0].equals("4")){
+			// move
+			/*
+			for(int i = 1; i < token.length; i += 3){
+				MapPanel.Character u;
+				if(users.containsKey(token[i])){
+					u = users.get(token[i]);
+				} else{
+					u = new MapPanel.Character(this, "orange.png");
+					users.put(token[i], u);
+				}
+				u.setLocation(
+						Integer.parseInt(token[i + 1]),
+						Integer.parseInt(token[i + 2]));
+			}
+			*/
+			/*
+			for(Map.Entry<String, Character> e : users.entrySet()){
+				
+			}
+			*/
+		} else if(token[0].equals("5")){
+			// notifyUsersInView
+			for(int i = 1; i < token.length; i += 3){
+				MapPanel.Character u;
+				if(users.containsKey(token[i])){
+					u = users.get(token[i]);
+				} else{
+					u = new MapPanel.Character(this, "orange.png");
+					users.put(token[i], u);
+				}
+				u.setLocation(
+						Integer.parseInt(token[i + 1]),
+						Integer.parseInt(token[i + 2]), false);
+			}
+			/*
+			for(Map.Entry<String, Character> e : users.entrySet()){
+				
+			}
+			*/
 		}
-		*/
 	}
 	public void connect(String serverName, String userName)
 	{

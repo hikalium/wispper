@@ -29,29 +29,81 @@ public class WispperServer implements Runnable {
     protected ServerSocket listen_socket;
     Thread thread;
     public Map<String, Connection> clients = new HashMap<>();
+	final int ability = 200;
 
     public void broadcastMsg(Connection senderConnection, String msg) {
 		User from = senderConnection.getUser();
-        int ability = 100;
         for (Map.Entry<String, Connection> e : clients.entrySet()) {
 			Connection connection = e.getValue();
 			User user = connection.getUser();
+			if(user == from) continue;	// do not send to sender itself
             if (from.getDistanceTo(user) <= ability) {
 				connection.sendMsg(msg);
             }
         }
     }
-/*
-    public void broadcastMsg(String str) {
-        try {
-            for (Connection client : clients) {
-                client.sendMsg(str);
+
+	public abstract class FForeachInView {
+		public String str = "";
+		public abstract void doEach(Connection c);
+	}
+
+	public void foreachInView(Connection fromConnection, FForeachInView f)
+	{
+		User from = fromConnection.getUser();
+        for (Map.Entry<String, Connection> e : clients.entrySet()) {
+			Connection connection = e.getValue();
+			User user = connection.getUser();
+			if(user == from) continue;	// do not send to sender itself
+            if (from.getDistanceTo(user) <= ability) {
+				f.doEach(connection);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-    }
+	}
+/*
+	public void foreachConnection(Connection fromConnection, FForeachInView f)
+	{
+		User from = fromConnection.getUser();
+        for (Map.Entry<String, Connection> e : clients.entrySet()) {
+			Connection connection = e.getValue();
+			User user = connection.getUser();
+			if(user == from) continue;	// do not send to sender itself
+			f.doEach(connection);
+        }
+	}
 */
+	public void notifyUsersInView(Connection toConnection)
+	{
+		User from = toConnection.getUser();
+		FForeachInView f = new FForeachInView(){
+			public void doEach(Connection c){
+				User user = c.getUser();
+				if(user == from) return;	// do not send to sender itself
+				if (from.getDistanceTo(user) <= ability) {
+					str += " " + user.toString();
+				}	
+			}
+		};
+		foreachInView(toConnection, f);
+		toConnection.sendMsg("5" + f.str);
+	}
+
+	public void notifyUsersInViewAll(Connection toConnection)
+	{
+		User from = toConnection.getUser();
+		FForeachInView f = new FForeachInView(){
+			public void doEach(Connection c){
+				User user = c.getUser();
+				if(user == from) return;	// do not send to sender itself
+				if (from.getDistanceTo(user) <= ability) {
+					notifyUsersInView(c);
+				}	
+			}
+		};
+		foreachInView(toConnection, f);
+	}
+	
+
     public void ServerListen() {
         try {
             listen_socket = new ServerSocket(DEFAULT_PORT);
@@ -112,18 +164,33 @@ class Connection extends Thread {
                 System.out.println(">" + line);
                 if (line == null) break;
 				String[] token = line.split(" ", 0);
-				if(token[0].equals("1") && token.length == 2){
-					// login
+				if(token[0].equals("1")){
+					if(token.length != 2){
+						this.sendMsg("2 2");
+						return;
+					}
+					if(server.clients.containsKey(token[1])){
+						// already in use
+						this.sendMsg("2 1");
+						return;
+					}
+					// login accepted
 					System.out.println("login: " + token[1]);
 					user = new User(token[1]);
 					server.clients.put(user.getUserName(), this);
-					String response = "2 0 " + server.clients.size() + " ";
-					for (Map.Entry<String, Connection> e : server.clients.entrySet()) {
-						Connection connection = e.getValue();
-						User user = connection.getUser();
-						response += user.toString() + " ";
-					}
-					this.sendMsg(response);
+					this.sendMsg("2 0 " + user.toString());
+					server.notifyUsersInView(this);
+				} else if(token[0].equals("4")){
+					// move
+					if(token.length != 3) return;
+					int x = Integer.parseInt(token[1]);
+					int y = Integer.parseInt(token[2]);
+					user.setPosition(x, y);
+					/*
+					server.broadcastMsg(
+							this, "4 " + user.getUserName() + " " + x + " " + y);
+							*/
+					server.notifyUsersInViewAll(this);
 				}
             }
         } catch (IOException e) {

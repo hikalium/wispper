@@ -15,8 +15,8 @@ WispperClient.class: WispperClient.java \
 run: WispperClient.class
 	java WispperClient
 
-run_server: WispperClient.class
-	java TestServer
+run_server: WispperServer.class
+	java WispperServer
 
 clean: 
 	-rm *.class
