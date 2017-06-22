@@ -180,6 +180,11 @@ class Connection extends Thread {
 					server.clients.put(user.getUserName(), this);
 					this.sendMsg("2 0 " + user.toString());
 					server.notifyUsersInView(this);
+				} else if(token[0].equals("3")){
+					// message
+					server.broadcastMsg(
+							this, "3 " + user.getUserName() + " " + token[1]);
+
 				} else if(token[0].equals("4")){
 					// move
 					if(token.length != 3) return;

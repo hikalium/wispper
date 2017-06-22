@@ -67,6 +67,7 @@ public class WispperClient extends JFrame implements Runnable {
 	public String userName;
 	public String serverName;
 	public MapPanel mapPanel;
+	public ChatPanel chatPanel;
 
 	public Map<String, MapPanel.Character> users = new HashMap<>();
 
@@ -113,6 +114,9 @@ public class WispperClient extends JFrame implements Runnable {
 				return;
 			}
 			loginFrame.loginPanel.setStatus("Unknown error", true);
+		} else if(token[0].equals("3")){
+			// message
+			chatPanel.appendToTimeline(token[1], token[2]);
 		} else if(token[0].equals("4")){
 			// move
 			/*

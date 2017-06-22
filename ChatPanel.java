@@ -7,6 +7,8 @@ import javax.imageio.ImageIO;
 import java.util.HashMap;
 import java.util.Map;
 
+import java.net.URLEncoder;
+import java.net.URLDecoder;
 
 @SuppressWarnings("serial") 
 public class ChatPanel extends JPanel implements ActionListener { 
@@ -21,6 +23,7 @@ public class ChatPanel extends JPanel implements ActionListener {
 
 	public ChatPanel(WispperClient client){
 		this.client = client;
+		client.chatPanel = this;
 		mapPanel = new MapPanel(client);
 		mapPanel.setPreferredSize(new Dimension(600, 512));
 		mapPanel.setBackground(Color.WHITE);
@@ -36,8 +39,23 @@ public class ChatPanel extends JPanel implements ActionListener {
 		//
 		sendButton.addActionListener(this);
 	}
+	public void appendToTimeline(String encodedUserName, String encodedBody)
+	{
+		try{
+			messageList.add(0, 
+					URLDecoder.decode(encodedUserName, "UTF-8") + ": " +
+					URLDecoder.decode(encodedBody, "UTF-8")
+					);
+		} catch(java.io.UnsupportedEncodingException e){
+			e.printStackTrace();
+		}
+	}
 	public void actionPerformed(ActionEvent event) {
-		messageList.add(0, messageField.getText());
-		client.sendMsg(messageField.getText());
+		try{
+			messageList.add(0, messageField.getText());
+			client.sendMsg("3 " + URLEncoder.encode(messageField.getText(), "UTF-8"));
+		} catch(java.io.UnsupportedEncodingException e){
+			e.printStackTrace();
+		}
 	}
 }
