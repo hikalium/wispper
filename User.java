@@ -1,10 +1,12 @@
 import java.util.Random;
 
 public class User {
+    int id;
     String name;
     int x, y;
 
-    User(String name, int x, int y) {
+    User(int id, String name, int x, int y) {
+        this.id = id;
         this.name = name;
         this.x = x;
         this.y = y;
