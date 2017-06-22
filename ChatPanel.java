@@ -52,7 +52,7 @@ public class ChatPanel extends JPanel implements ActionListener {
 	}
 	public void actionPerformed(ActionEvent event) {
 		try{
-			messageList.add(0, messageField.getText());
+			messageList.add(0, client.userName + ": " + messageField.getText());
 			client.sendMsg("3 " + URLEncoder.encode(messageField.getText(), "UTF-8"));
 		} catch(java.io.UnsupportedEncodingException e){
 			e.printStackTrace();

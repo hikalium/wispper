@@ -13,6 +13,7 @@ import java.awt.image.BufferedImage;
 public class MapPanel extends JPanel/* implements ActionListener*/ { 
 	WispperClient client;
 	public static class Character extends JLabel{
+		public boolean flag = false;
 		private Point2D pos = new Point2D.Float();
 		BufferedImage img;
 		WispperClient client;

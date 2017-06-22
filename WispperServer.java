@@ -60,18 +60,16 @@ public class WispperServer implements Runnable {
             }
         }
 	}
-/*
-	public void foreachConnection(Connection fromConnection, FForeachInView f)
+
+	public void foreachConnection(FForeachInView f)
 	{
-		User from = fromConnection.getUser();
         for (Map.Entry<String, Connection> e : clients.entrySet()) {
 			Connection connection = e.getValue();
 			User user = connection.getUser();
-			if(user == from) continue;	// do not send to sender itself
 			f.doEach(connection);
         }
 	}
-*/
+
 	public void notifyUsersInView(Connection toConnection)
 	{
 		User from = toConnection.getUser();
@@ -88,19 +86,14 @@ public class WispperServer implements Runnable {
 		toConnection.sendMsg("5" + f.str);
 	}
 
-	public void notifyUsersInViewAll(Connection toConnection)
+	public void notifyUsersInViewAll()
 	{
-		User from = toConnection.getUser();
 		FForeachInView f = new FForeachInView(){
 			public void doEach(Connection c){
-				User user = c.getUser();
-				if(user == from) return;	// do not send to sender itself
-				if (from.getDistanceTo(user) <= ability) {
-					notifyUsersInView(c);
-				}	
+				notifyUsersInView(c);
 			}
 		};
-		foreachInView(toConnection, f);
+		foreachConnection(f);
 	}
 	
 
@@ -195,7 +188,7 @@ class Connection extends Thread {
 					server.broadcastMsg(
 							this, "4 " + user.getUserName() + " " + x + " " + y);
 							*/
-					server.notifyUsersInViewAll(this);
+					server.notifyUsersInViewAll();
 				}
             }
         } catch (IOException e) {

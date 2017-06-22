@@ -11,6 +11,7 @@ import javax.swing.InputMap;
 import javax.swing.ActionMap;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Iterator;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -73,6 +74,27 @@ public class WispperClient extends JFrame implements Runnable {
 
 	public MapPanel.Character getMainCharacter(){
 		return users.get(userName);
+	}
+
+	public void setAllUserFlag()
+	{
+		for (Map.Entry<String, MapPanel.Character> e: users.entrySet()) {
+			e.getValue().flag = true;
+		}
+	}
+
+	public void removeFlaggedUsers()
+	{
+		for (Iterator<String> i = users.keySet().iterator(); i.hasNext();) {
+			String key = i.next();
+			MapPanel.Character c = users.get(key);
+			if (c.flag && !key.equals(userName)) {
+				i.remove();
+				mapPanel.remove(c);
+			}
+		}
+		mapPanel.revalidate();
+		mapPanel.repaint();
 	}
 
 	public void startConnect() {
@@ -140,10 +162,12 @@ public class WispperClient extends JFrame implements Runnable {
 			*/
 		} else if(token[0].equals("5")){
 			// notifyUsersInView
+			setAllUserFlag();
 			for(int i = 1; i < token.length; i += 3){
 				MapPanel.Character u;
 				if(users.containsKey(token[i])){
 					u = users.get(token[i]);
+					u.flag = false;
 				} else{
 					u = new MapPanel.Character(this, "orange.png");
 					users.put(token[i], u);
@@ -152,11 +176,7 @@ public class WispperClient extends JFrame implements Runnable {
 						Integer.parseInt(token[i + 1]),
 						Integer.parseInt(token[i + 2]), false);
 			}
-			/*
-			for(Map.Entry<String, Character> e : users.entrySet()){
-				
-			}
-			*/
+			removeFlaggedUsers();
 		}
 	}
 	public void connect(String serverName, String userName)
