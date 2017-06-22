@@ -13,3 +13,6 @@ run: WispperClient.class
 
 run_server: WispperClient.class
 	java TestServer
+
+clean: 
+	-rm *.class

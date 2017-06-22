@@ -17,7 +17,7 @@ public class TestServer implements Runnable {
 
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(() -> {
-			new ChatServer();
+			new TestServer();
 		});
 	}
 
