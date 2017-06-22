@@ -1,8 +1,8 @@
 import java.util.Random;
 
 public class User {
-    private String name;
-    private int x, y;
+    String name;
+    int x, y;
 
     User(String name, int x, int y) {
         this.name = name;
