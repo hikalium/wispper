@@ -1,24 +1,22 @@
 import java.util.Random;
 
 public class User {
-    int id;
-    String name;
-    int x, y;
+    private String name;
+    private int x, y;
 
-    User(int id, String name, int x, int y) {
-        this.id = id;
-        this.name = name;
-        this.x = x;
-        this.y = y;
-    }
-
-    User() {
+    User(String name) {
         Random randomGenerator = new Random();
-        name = "tester" + randomGenerator.nextInt(100);
-        x = randomGenerator.nextInt(1000);
-        y = randomGenerator.nextInt(1000);
+        this.name = name;
+        this.x = randomGenerator.nextInt(500);
+        this.y = randomGenerator.nextInt(500);
     }
-
+	public String getUserName(){
+		return this.name;
+	}
+	public int getDistanceTo(User to)
+	{
+		return Math.abs(this.x - to.x) + Math.abs(this.y - to.y);
+	}
     @Override
     public String toString() {
         return name + " " + x + " " + y;

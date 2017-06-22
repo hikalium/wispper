@@ -1,4 +1,4 @@
-import com.apple.eawt.UserSessionListener;
+//import com.apple.awt.UserSessionListener;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -28,19 +28,20 @@ public class WispperServer implements Runnable {
     public final static int DEFAULT_PORT = 6543;
     protected ServerSocket listen_socket;
     Thread thread;
-    Map<Integer, Connection> clients = new HashMap<>();
-    public static java.util.Vector<User> UserList = new java.util.Vector<>();
+    public Map<String, Connection> clients = new HashMap<>();
 
-    public void broadcastMsg() {
+    public void broadcastMsg(Connection senderConnection, String msg) {
+		User from = senderConnection.getUser();
         int ability = 100;
-        User from;
-        for (User user : UserList) {
-            if (Math.abs(user.x - from.x) <= ability && Math.abs(user.y - from.y) <= ability) {
-
+        for (Map.Entry<String, Connection> e : clients.entrySet()) {
+			Connection connection = e.getValue();
+			User user = connection.getUser();
+            if (from.getDistanceTo(user) <= ability) {
+				connection.sendMsg(msg);
             }
         }
     }
-
+/*
     public void broadcastMsg(String str) {
         try {
             for (Connection client : clients) {
@@ -50,7 +51,7 @@ public class WispperServer implements Runnable {
             e.printStackTrace();
         }
     }
-
+*/
     public void ServerListen() {
         try {
             listen_socket = new ServerSocket(DEFAULT_PORT);
@@ -67,7 +68,6 @@ public class WispperServer implements Runnable {
             while (true) {
                 Socket client_socket = listen_socket.accept();
                 Connection c = new Connection(client_socket, this);
-                clients.put(c.getID(), c);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -79,38 +79,31 @@ class Connection extends Thread {
     protected Socket client;
     protected BufferedReader in;
     protected PrintWriter out;
-//    protected BufferedReader uin;
-//    protected PrintWriter uout;
     WispperServer server;
+	private User user;
 
-    private static int seq = 0;
-    private int id;
-
-    public int getID(){
-        return id;
+    public User getUser(){
+        return user;
     }
 
-    public Connection(Socket client_socket, WispperServer server_frame) {
-        client = client_socket;
-        server = server_frame;
-        try {
-            in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-            out = new java.io.PrintWriter(client.getOutputStream());
+	public Connection(Socket client_socket, WispperServer server_frame) {
+		client = client_socket;
+		server = server_frame;
+		try {
+			in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+			out = new java.io.PrintWriter(client.getOutputStream());
+		} catch (IOException e) {
+			try {
+				client.close();
+			} catch (IOException e2) {
 
-//            uin = new BufferedReader(new InputStreamReader(client.getInputStream()));
-//            uout = new java.io.PrintWriter(client.getOutputStream());
-
-        } catch (IOException e) {
-            try {
-                client.close();
-            } catch (IOException e2) {
-            }
-            e.printStackTrace();
-            return;
-        }
-        System.out.println("connected ");
-        this.start();
-    }
+			}
+			e.printStackTrace();
+			return;
+		}
+		System.out.println("connected ");
+		this.start();
+	}
 
     public void run() {
         try {
@@ -118,6 +111,20 @@ class Connection extends Thread {
                 String line = receiveMsg();
                 System.out.println(">" + line);
                 if (line == null) break;
+				String[] token = line.split(" ", 0);
+				if(token[0].equals("1") && token.length == 2){
+					// login
+					System.out.println("login: " + token[1]);
+					user = new User(token[1]);
+					server.clients.put(user.getUserName(), this);
+					String response = "2 0 " + server.clients.size() + " ";
+					for (Map.Entry<String, Connection> e : server.clients.entrySet()) {
+						Connection connection = e.getValue();
+						User user = connection.getUser();
+						response += user.toString() + " ";
+					}
+					this.sendMsg(response);
+				}
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -125,27 +132,19 @@ class Connection extends Thread {
             try {
                 client.close();
                 System.out.println("disconnected");
+
+				if(this.user != null){
+					server.clients.remove(this.user.getUserName());
+				}
             } catch (IOException e2) {
             }
         }
     }
 
-    public void sendMsg(String msg) throws IOException {
-        out.println(msg);
-        out.flush();
+    public void sendMsg(String msg) {
+		out.println(msg);
+		out.flush();
     }
-
-//    public void getUserInfo() throws IOException {
-//        try {
-//            String userInfo = uin.readLine();
-//            String name;
-//            int x, y;
-//            User user = new User(name, x, y);
-//            System.out.println(userInfo);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
 
     public String receiveMsg() throws IOException {
         try {

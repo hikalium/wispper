@@ -20,6 +20,7 @@ public class ChatPanel extends JPanel implements ActionListener {
 	final JScrollPane scrollPane = new JScrollPane(messageJList);
 
 	public ChatPanel(WispperClient client){
+		this.client = client;
 		mapPanel = new MapPanel(client);
 		mapPanel.setPreferredSize(new Dimension(600, 512));
 		mapPanel.setBackground(Color.WHITE);
@@ -37,5 +38,6 @@ public class ChatPanel extends JPanel implements ActionListener {
 	}
 	public void actionPerformed(ActionEvent event) {
 		messageList.add(0, messageField.getText());
+		client.sendMsg(messageField.getText());
 	}
 }

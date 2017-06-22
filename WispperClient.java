@@ -38,7 +38,7 @@ public class WispperClient extends JFrame implements Runnable {
 		}
 		return "";
 	}
-	public void sendMsg(String msg) throws IOException {
+	public void sendMsg(String msg){
 		out.println(msg);
 		out.flush();
 	}
@@ -76,6 +76,7 @@ public class WispperClient extends JFrame implements Runnable {
 			in = new BufferedReader(
 					new InputStreamReader(sock.getInputStream()));
 			out = new java.io.PrintWriter(sock.getOutputStream());
+			sendMsg("1 " + userName);
 			chatFrame = new ChatFrame(this);
 			loginFrame.dispose();
 		} catch (IOException e) {
@@ -88,8 +89,9 @@ public class WispperClient extends JFrame implements Runnable {
 		}
 	}
 	public void processMsg(String str) {
-		/*
+		
 		System.out.println("received[" + str + "]");
+		/*
 		String[] separated = str.split(" ", 0);
 		if(separated.length >= 2){
 			if(separated[0].equals("id")){
@@ -121,107 +123,7 @@ public class WispperClient extends JFrame implements Runnable {
 		this.startConnect();
 	}
 	private void init() throws Exception {
-		/*
-		JPanel pnlHead = new JPanel();
-		pnlHead.add(btnStart);
-		getContentPane().add(pnlHead, BorderLayout.NORTH);
-
-		getContentPane().add(new JScrollPane(lstMsg), BorderLayout.CENTER);
-		JPanel pnlFoot = new JPanel();
-		pnlFoot.add(txtInput);
-		pnlFoot.add(btnSend);
-		getContentPane().add(pnlFoot, BorderLayout.SOUTH);
-
-		lstMsg.setModel(lstMsgModel);
-
-		btnSend.addActionListener(e -> {
-			if (txtInput.getText().length() != 0) {
-				try {
-					sendMsg(txtInput.getText());
-				} catch (IOException e2) {
-					processMsg(e2.toString());
-				}
-			}
-
-		});
-
-		btnStart.addActionListener(e -> {
-			this.startConnect();
-		});
-
-		this.setSize(400, 300);
-		this.setTitle("Chat Client");
-		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		this.setVisible(true);
-		*/
 		loginFrame = new LoginFrame(this);
-		/*
-		final Panel1 panel1 = new Panel1(this);
-		panel1.setBackground(Color.WHITE); 
-		panel = panel1;
-		add(panel1);
-		setVisible(true);
-		final WispperClient client = this;
-		// set key events
-		InputMap im = getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-		ActionMap am = getRootPane().getActionMap();
-		Map<Integer, String> imList = new HashMap<>();
-		imList.put(java.awt.event.KeyEvent.VK_ENTER, "key_Enter");
-		imList.put(java.awt.event.KeyEvent.VK_UP, "key_Up");
-		imList.put(java.awt.event.KeyEvent.VK_DOWN, "key_Down");
-		imList.put(java.awt.event.KeyEvent.VK_LEFT, "key_Left");
-		imList.put(java.awt.event.KeyEvent.VK_RIGHT, "key_Right");
-		for(Map.Entry<Integer, String>e: imList.entrySet()){
-			im.put(KeyStroke.getKeyStroke(e.getKey(), 0), e.getValue());
-		}
-		am.put("key_Enter",
-			new AbstractAction() {
-				public void actionPerformed(ActionEvent e) {
-					panel1.moveCharacter(client.clientID, 0, 10);
-				}
-			}
-		);
-		am.put("key_Up",
-			new AbstractAction() {
-				public void actionPerformed(ActionEvent e) {
-					panel1.moveCharacter(client.clientID, 0, -10);
-				}
-			}
-		);
-		am.put("key_Down",
-			new AbstractAction() {
-				public void actionPerformed(ActionEvent e) {
-					panel1.moveCharacter(client.clientID, 0, 10);
-				}
-			}
-		);
-		am.put("key_Left",
-			new AbstractAction() {
-				public void actionPerformed(ActionEvent e) {
-					panel1.moveCharacter(client.clientID, -10, 0);
-				}
-			}
-		);
-		am.put("key_Right",
-			new AbstractAction() {
-				public void actionPerformed(ActionEvent e) {
-					panel1.moveCharacter(client.clientID, 10, 0);
-				}
-			}
-		);
-		getRootPane()
-			.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-			.put(KeyStroke.getKeyStroke(
-						java.awt.event.KeyEvent.VK_SPACE, 0), "key_Space");
-		getRootPane().getActionMap().put("key_Space",
-			new AbstractAction() {
-				public void actionPerformed(ActionEvent e) {
-					System.out.println("Space が押されました");
-				}
-			}
-		);
-		this.startConnect();
-		*/
 	}
 }
 
