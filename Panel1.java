@@ -18,8 +18,8 @@ public class Panel1 extends JPanel {
 		}
 	}
 	private Map<Integer, ChatCharacter> characterList;
-	private WispperClient client;
-	public Panel1(WispperClient client){
+	private ChatClient client;
+	public Panel1(ChatClient client){
 		this.client = client;
 		this.characterList = new HashMap<>();
 	}

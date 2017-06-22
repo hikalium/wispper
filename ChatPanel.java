@@ -22,7 +22,7 @@ public class ChatPanel extends JPanel implements ActionListener {
 	public ChatPanel(WispperClient client){
 		mapPanel = new MapPanel(client);
 		mapPanel.setPreferredSize(new Dimension(600, 512));
-		mapPanel.setBackground(Color.BLACK);
+		mapPanel.setBackground(Color.WHITE);
 		//
 		Panel leftPane = new Panel();
 		leftPane.setLayout(new BoxLayout(leftPane,BoxLayout.Y_AXIS));

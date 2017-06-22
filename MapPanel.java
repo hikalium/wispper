@@ -6,12 +6,38 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import java.util.HashMap;
 import java.util.Map;
-
+import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
 
 @SuppressWarnings("serial") 
 public class MapPanel extends JPanel/* implements ActionListener*/ { 
 	WispperClient client;
+	public class Character extends JLabel{
+		private Point2D pos = new Point2D.Float();
+		BufferedImage img;
+		public Character(String imgName){
+			super(new ImageIcon("./imgs/" + imgName));
+			setLayout(null);
+			setBounds(0, 0, 64, 64);
+		}
+		@Override public void paintComponent(Graphics g) {
+			super.paintComponent(g);
+			Graphics2D g2d = (Graphics2D) g;
+			//
+			if(img != null) g2d.drawImage(img, 0, 0, 64, 64, null);
+			System.out.println("paintComponent!");
+		}
+		public void moveRel(int dx, int dy)
+		{
+			setLocation(this.getX() + dx, this.getY() + dy);
+			System.out.println("(" + this.getX() + ", " + this.getY() + ")");
+			revalidate();
+			repaint();
+		}
+	}
+	Character mainCharacter = new Character("black.png");
 	public MapPanel(WispperClient client){
+		setLayout(null);
 		setFocusable(true);
 		// set key events
 		InputMap im = getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
@@ -28,40 +54,34 @@ public class MapPanel extends JPanel/* implements ActionListener*/ {
 		am.put("key_Enter",
 			new AbstractAction() {
 				public void actionPerformed(ActionEvent e) {
-					//panel1.moveCharacter(client.clientID, 0, 10);
-					System.out.println("0, 10");
 				}
 			}
 		);
 		am.put("key_Up",
 			new AbstractAction() {
 				public void actionPerformed(ActionEvent e) {
-					//panel1.moveCharacter(client.clientID, 0, -10);
-					System.out.println("0, -10");
+					mainCharacter.moveRel(0, -10);
 				}
 			}
 		);
 		am.put("key_Down",
 			new AbstractAction() {
 				public void actionPerformed(ActionEvent e) {
-					//panel1.moveCharacter(client.clientID, 0, 10);
-					System.out.println("0, 10");
+					mainCharacter.moveRel(0, 10);
 				}
 			}
 		);
 		am.put("key_Left",
 			new AbstractAction() {
 				public void actionPerformed(ActionEvent e) {
-					//panel1.moveCharacter(client.clientID, -10, 0);
-					System.out.println("-10, 0");
+					mainCharacter.moveRel(-10, 0);
 				}
 			}
 		);
 		am.put("key_Right",
 			new AbstractAction() {
 				public void actionPerformed(ActionEvent e) {
-					//panel1.moveCharacter(client.clientID, 10, 0);
-					System.out.println("10, 0");
+					mainCharacter.moveRel(10, 0);
 				}
 			}
 		);
@@ -82,5 +102,6 @@ public class MapPanel extends JPanel/* implements ActionListener*/ {
 				pane.requestFocus(true);
 			}
 		});
+		add(mainCharacter);
 	}
 }
