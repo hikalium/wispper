@@ -26,7 +26,7 @@ public class LoginFrame extends JFrame {
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		//
 		loginPanel = new LoginPanel(client);
-		setSize(300, 120); 
+		setSize(300, 160); 
 		add(loginPanel);
 		setResizable(false);
 		setVisible(true);

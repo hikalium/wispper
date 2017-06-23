@@ -97,14 +97,14 @@ public class WispperClient extends JFrame implements Runnable {
 		mapPanel.repaint();
 	}
 
-	public void startConnect() {
+	public void startConnect(String iconName) {
 		try {
 			sock = new Socket(this.serverName, DEFAULT_PORT);
 			System.out.println("Connection established");
 			in = new BufferedReader(
 					new InputStreamReader(sock.getInputStream()));
 			out = new java.io.PrintWriter(sock.getOutputStream());
-			sendMsg("1 " + userName);
+			sendMsg("1 " + userName + " " + iconName);
 			if (thread == null) {
 				thread = new Thread(this);
 				thread.start();
@@ -127,12 +127,15 @@ public class WispperClient extends JFrame implements Runnable {
 				chatFrame = new ChatFrame(this);
 				loginFrame.dispose();
 				//
+				String userName = token[2];
+				String iconName = token[3];
+				int x = Integer.parseInt(token[4]);
+				int y = Integer.parseInt(token[5]);
+				//
 				MapPanel.Character u;
-				u = new MapPanel.Character(this, "orange.png");
-				u.setLocation(
-						Integer.parseInt(token[3]),
-						Integer.parseInt(token[4]), false);
-				users.put(token[2], u);
+				u = new MapPanel.Character(this, iconName);
+				u.setLocation(x, y,  false);
+				users.put(userName, u);
 				return;
 			}
 			loginFrame.loginPanel.setStatus("Unknown error", true);
@@ -163,28 +166,31 @@ public class WispperClient extends JFrame implements Runnable {
 		} else if(token[0].equals("5")){
 			// notifyUsersInView
 			setAllUserFlag();
-			for(int i = 1; i < token.length; i += 3){
+			for(int i = 1; i < token.length; i += 4){
+				String userName = token[i];
+				String iconName = token[i + 1];
+				int x = Integer.parseInt(token[i + 2]);
+				int y = Integer.parseInt(token[i + 3]);
+				//
 				MapPanel.Character u;
-				if(users.containsKey(token[i])){
-					u = users.get(token[i]);
+				if(users.containsKey(userName)){
+					u = users.get(userName);
 					u.flag = false;
 				} else{
-					u = new MapPanel.Character(this, "orange.png");
-					users.put(token[i], u);
+					u = new MapPanel.Character(this, iconName);
+					users.put(userName, u);
 				}
-				u.setLocation(
-						Integer.parseInt(token[i + 1]),
-						Integer.parseInt(token[i + 2]), false);
+				u.setLocation(x, y, false);
 			}
 			removeFlaggedUsers();
 		}
 	}
-	public void connect(String serverName, String userName)
+	public void connect(String serverName, String userName, String iconName)
 	{
 		System.out.println("connecting " + userName + "@" + serverName + " ...");
 		this.serverName = serverName;
 		this.userName = userName;
-		this.startConnect();
+		this.startConnect(iconName);
 	}
 	private void init() throws Exception {
 		loginFrame = new LoginFrame(this);

@@ -2,11 +2,13 @@ import java.util.Random;
 
 public class User {
     private String name;
+    private String iconName;
     private int x, y;
 
-    User(String name) {
+    User(String name, String iconName) {
         Random randomGenerator = new Random();
         this.name = name;
+        this.iconName = iconName;
         this.x = randomGenerator.nextInt(500);
         this.y = randomGenerator.nextInt(500);
     }
@@ -24,6 +26,6 @@ public class User {
 	}
     @Override
     public String toString() {
-        return name + " " + x + " " + y;
+        return name + " " + iconName + " " + x + " " + y;
     }
 }

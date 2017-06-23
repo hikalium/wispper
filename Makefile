@@ -5,7 +5,7 @@ default:
 WispperClient.class: WispperClient.java \
 	LoginFrame.class LoginPanel.class \
 	ChatFrame.class ChatPanel.class \
-	MapPanel.class \
+	MapPanel.class User.class \
    	Makefile
 	javac WispperClient.java
 
@@ -15,7 +15,7 @@ WispperClient.class: WispperClient.java \
 run: WispperClient.class
 	java WispperClient
 
-run_server: WispperServer.class
+run_server: WispperServer.class User.class
 	java WispperServer
 
 clean: 

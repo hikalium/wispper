@@ -158,7 +158,8 @@ class Connection extends Thread {
                 if (line == null) break;
 				String[] token = line.split(" ", 0);
 				if(token[0].equals("1")){
-					if(token.length != 2){
+					// try login
+					if(token.length != 3){
 						this.sendMsg("2 2");
 						return;
 					}
@@ -169,7 +170,7 @@ class Connection extends Thread {
 					}
 					// login accepted
 					System.out.println("login: " + token[1]);
-					user = new User(token[1]);
+					user = new User(token[1], token[2]);
 					server.clients.put(user.getUserName(), this);
 					this.sendMsg("2 0 " + user.toString());
 					server.notifyUsersInView(this);
