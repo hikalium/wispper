@@ -202,6 +202,7 @@ class Connection extends Thread {
 				if(this.user != null){
 					server.clients.remove(this.user.getUserName());
 				}
+				server.notifyUsersInViewAll();
             } catch (IOException e2) {
             }
         }
