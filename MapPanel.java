@@ -15,7 +15,6 @@ public class MapPanel extends JPanel/* implements ActionListener*/ {
 	public static class Character extends JLabel{
 		public boolean flag = false;
 		private Point2D pos = new Point2D.Float();
-		BufferedImage img;
 		WispperClient client;
 		public Character(WispperClient client, String imgName){
 			super(new ImageIcon("./imgs/" + imgName));
@@ -23,13 +22,6 @@ public class MapPanel extends JPanel/* implements ActionListener*/ {
 			setLayout(null);
 			setBounds(0, 0, 64, 64);
 			client.mapPanel.add(this);
-		}
-		@Override public void paintComponent(Graphics g) {
-			super.paintComponent(g);
-			Graphics2D g2d = (Graphics2D) g;
-			//
-			if(img != null) g2d.drawImage(img, 0, 0, 64, 64, null);
-			//System.out.println("paintComponent!");
 		}
 		public void setLocation(int x, int y, boolean update){
 			super.setLocation(x, y);
